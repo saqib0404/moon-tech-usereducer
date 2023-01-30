@@ -20,7 +20,7 @@ const Home = () => {
   }
 
   if (products.data?.length > 0) {
-    content = products.data.map(product => <ProductCard product={product}></ProductCard>)
+    content = products.data.map((product,idx) => <ProductCard key={idx} product={product}></ProductCard>)
   }
 
   return (

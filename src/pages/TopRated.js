@@ -20,7 +20,7 @@ const TopRated = () => {
   }
 
   if (products.data?.length > 0) {
-    content = products.data.filter(product => product.rating > 3).map(product => <ProductCard product={product}></ProductCard>)
+    content = products.data.filter(product => product.rating > 3).map((product,idx) => <ProductCard key={idx} product={product}></ProductCard>)
   }
 
   return (
