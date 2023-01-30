@@ -1,50 +1,39 @@
-import React, {
-  createContext,
-  useContext,
-  useEffect,
-  useReducer,
-  useState,
-} from "react";
-import { actionTypes } from "../state/ProductState/actionTypes";
-import {
-  productReducer,
-  initialState,
-} from "../state/ProductState/productReducer";
+import React from 'react';
+import { useContext } from 'react';
+import { useReducer } from 'react';
+import { useState } from 'react';
+import { createContext } from 'react';
+import { useEffect } from 'react';
+import { actionTypes } from '../state/actionTypes';
+import { initialState, productReducer } from '../state/ProductState';
 
-const PRODUCT_CONTEXT = createContext();
+const PRODUCT_CONTEXT = createContext()
 
 const ProductProvider = ({ children }) => {
-  const [state, dispatch] = useReducer(productReducer, initialState);
+    const [state, dispatch] = useReducer(productReducer, initialState)
 
-  console.log(state);
+    useEffect(() => {
+        dispatch({ type: actionTypes.FETCHING_START })
+        fetch('products.json')
+            .then(res => res.json())
+            .then(data => dispatch({ type: actionTypes.FETCHING_SUCCESS, payload: { data } }))
+            .catch(e => dispatch({ type: actionTypes.FETCHING_FAILED, payload: e.message }))
+    }, [])
 
-  useEffect(() => {
-    dispatch({ type: actionTypes.FETCHING_START });
-    fetch("http://localhost:5000/products")
-      .then((res) => res.json())
-      .then((data) =>
-        dispatch({ type: actionTypes.FETCHING_SUCCESS, payload: data.data })
-      )
-      .catch(() => {
-        dispatch({ type: actionTypes.FETCHING_ERROR });
-      });
-  }, []);
+    const value = {
+        state
+    }
 
-  const value = {
-    state,
-    dispatch,
-  };
-
-  return (
-    <PRODUCT_CONTEXT.Provider value={value}>
-      {children}
-    </PRODUCT_CONTEXT.Provider>
-  );
+    return (
+        <PRODUCT_CONTEXT.Provider value={value}>
+            {children}
+        </PRODUCT_CONTEXT.Provider>
+    );
 };
 
 export const useProducts = () => {
-  const context = useContext(PRODUCT_CONTEXT);
-  return context;
-};
+    const context = useContext(PRODUCT_CONTEXT)
+    return context
+}
 
 export default ProductProvider;
